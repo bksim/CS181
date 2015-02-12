@@ -1,0 +1,71 @@
+1_naive_regression.csv
+	literally SKLearn linear_model.regression
+	0.29845
+
+2_SGD_regression.csv
+	literally default values SKLearn stochastic gradient descent regression
+	0.29857 lolsux
+
+3_SGDelasticnet_regression.csv
+	straight up SKL sgd with elastic net penalty
+	0.29863 lol even worse
+
+4_SVR_regression.csv
+	straight up SVR trained on only first 10000 samples
+	0.29728 barely the best so far
+
+5_rf_regression.csv
+	straight up random forest regression on all samples (80%)
+
+
+TODO: see if morgan radius 2, 256 bit with features on is any good
+TODO: see if combination of topological fingerprint (1024) + ryan adams's fingerprints are better
+
+morgan radius 3, 1024 bits
+OLS MAE: 0.158818560242
+much better than morgan rad 3, 512 bit OLS (~.18) but RF trained on all 1million training samples only gets
+MAE: 0.101050690987
+
+which is not a huge improvement
+==
+MUST RETRAIN RF CLASSIFIER ON ALL 1 MILLION DATA POINTS!!! was only using 800k before... TT
+
+steps:
+1) load training data, test data
+
+2) load morgan radius 3, 512 training fingerprints (or 1024 if that turns out to be better)
+X = import_from_generated_features('train.MorganFingerprint_rad3_512.csv.gz')
+
+3) generate matrices
+
+# generate X and y matrices, and test and train matrices for use in generating classifier
+X = np.vstack(tuple([d['features'] for d in train_data_fp]))
+y = [d['gap'] for d in train_data]
+X_train, X_test, y_train, y_test = cross_validation.train_test_split(X, y, test_size=0.2, random_state=0)
+print X_train.shape
+print X_test.shape
+
+4) run random forest again
+clf_rf = fit_randomforest(X, y, X_test, y_test, n_estimators=30, max_features='sqrt')
+
+5) should be better than what we have on kaggle right now (0.10152)
+
+6) if so, load morgan radius 3, 512 test fingerprints
+test_data_fp = import_from_generated_features('test.MorganFingerprint_rad3_512.csv.gz', test_data)
+len(test_data_fp) should be ~800k
+
+7) # writes prediction file to given filename using given test data features and using given classifier
+write_prediction_file('13_Morgan_rad3_1024_allREAL_RF.csv', test_data_fp, clf_rf)
+
+
+TODO: 
+look at MACCS keys [ ]
+try useFeatures=false on morgan [ ]
+try higher radii morgan [x, not very good]
+
+-----
+using radius 5, 1024 bit morgan, check clf_rf (800k samples)
+
+MAE: 0.104921066945
+
+not better really, so we've hit diminishing returns
