@@ -59,9 +59,9 @@ write_prediction_file('13_Morgan_rad3_1024_allREAL_RF.csv', test_data_fp, clf_rf
 
 
 TODO: 
-look at MACCS keys [ ]
-try useFeatures=false on morgan [ ]
-try higher radii morgan [x, not very good]
+look at MACCS keys [ MAE: 0.281623520387 for OLS, MAE: 0.234058025314 for 80% RF ]
+try useFeatures=false on morgan [ radius3, 512bit, feature=false, MAE: 0.185270743913 for OLS ]
+try higher radii morgan [ check below, not very good]
 
 -----
 using radius 5, 1024 bit morgan, check clf_rf (800k samples)
